@@ -25,7 +25,7 @@ function makeTooltip(formato: 'contagem' | 'moeda') {
     const p = payload[0].payload as ContagemItem;
     const detalhe = formato === 'moeda'
       ? `${formatarMoeda(p.total)} · ${p.percentual}%`
-      : `${p.total} ${p.total === 1 ? 'problema' : 'problemas'} · ${p.percentual}%`;
+      : `${p.total} ${p.total === 1 ? 'ocorrência' : 'ocorrências'} · ${p.percentual}%`;
     return (
       <div className="max-w-[200px] rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs shadow-xl dark:border-ink-600 dark:bg-ink-900/95">
         <p className="font-medium text-slate-800 dark:text-slate-100 break-words">{p.nome}</p>

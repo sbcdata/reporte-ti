@@ -30,8 +30,8 @@ export default function ProblemaView({ id }: { id: string }) {
 
   if (!p) {
     return (
-      <Shell crumbs={[{ rotulo: 'Dashboard', onClick: irDashboard }]} titulo="Problema não encontrado">
-        <Vazio mensagem="O problema solicitado não existe na planilha atual." />
+      <Shell crumbs={[{ rotulo: 'Dashboard', onClick: irDashboard }]} titulo="Ocorrência não encontrada">
+        <Vazio mensagem="A ocorrência solicitada não existe na planilha atual." />
       </Shell>
     );
   }
@@ -43,9 +43,9 @@ export default function ProblemaView({ id }: { id: string }) {
           { rotulo: 'Dashboard', onClick: irDashboard },
           { rotulo: p.unidade, onClick: () => irUnidade(p.unidade) },
           { rotulo: p.categoria, onClick: () => irCategoria(p.unidade, p.categoria) },
-          { rotulo: `Problema #${p.id}` },
+          { rotulo: `Ocorrência #${p.id}` },
         ]}
-        titulo={p.problema || `Problema #${p.id}`}
+        titulo={p.problema || `Ocorrência #${p.id}`}
         subtitulo={`${p.unidade} · ${p.categoria}`}
         acao={<ExportButton onClick={() => setExportOpen(true)} />}
       >
@@ -71,7 +71,7 @@ export default function ProblemaView({ id }: { id: string }) {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <Painel titulo="Diagnóstico" className="lg:col-span-2" delay={80}>
-            <Campo rotulo="Problema Identificado"          valor={p.problema} destaque />
+            <Campo rotulo="Ocorrência Identificada"         valor={p.problema} destaque />
             <Campo rotulo="Impacto / Risco Principal"      valor={p.impacto} />
             <Campo rotulo="Ação Prioritária Recomendada"   valor={p.acao} />
           </Painel>

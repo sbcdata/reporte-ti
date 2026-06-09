@@ -30,18 +30,18 @@ export default function UnidadeView({ unidade }: { unidade: string }) {
           { rotulo: unidade },
         ]}
         titulo={unidade}
-        subtitulo={`Distribuição dos problemas desta unidade por categoria.`}
+        subtitulo={`Distribuição das ocorrências desta unidade por categoria.`}
         acao={<ExportButton onClick={() => setExportOpen(true)} />}
       >
         {daUnidade.length === 0 ? (
-          <Vazio mensagem="Nenhum problema encontrado para esta unidade." />
+          <Vazio mensagem="Nenhuma ocorrência encontrada para esta unidade." />
         ) : (
           <>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <KPI rotulo="Problemas na Unidade"         valor={daUnidade.length}           accent="#f59e0b" />
+              <KPI rotulo="Ocorrências na Unidade"        valor={daUnidade.length}           accent="#f59e0b" />
               <KPI rotulo="Categorias"                   valor={porCategoria.length}         accent="#0ea5e9" delay={60} />
               <KPI
-                rotulo="Categoria com Mais Problemas"
+                rotulo="Categoria com Mais Ocorrências"
                 valor={porCategoria[0]?.total ?? 0}
                 detalhe={porCategoria[0]?.nome}
                 accent="#10b981"
@@ -51,7 +51,7 @@ export default function UnidadeView({ unidade }: { unidade: string }) {
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
               <Painel
-                titulo="Problemas por Categoria"
+                titulo="Ocorrências por Categoria"
                 className="lg:col-span-3"
                 acao={<span className="eyebrow">clique para abrir</span>}
                 delay={120}

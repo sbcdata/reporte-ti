@@ -17,7 +17,7 @@ export function gerarExcel(problemas: Problema[], ctx: ExportCtx): void {
     return {
       'Unidade':            u.nome,
       'Estado(s)':          estados,
-      'Total de Problemas': u.total,
+      'Total de Ocorrências': u.total,
       'Participação (%)':   u.percentual,
       'Críticos':           criticos,
       'Em Andamento':       emAndamento,
@@ -39,7 +39,7 @@ export function gerarExcel(problemas: Problema[], ctx: ExportCtx): void {
     'Estado':              p.estado,
     'Superintendência':    p.superintendencia,
     'Categoria':           p.categoria,
-    'Problema':         p.problema,
+    'Ocorrência':       p.problema,
     'Criticidade':      p.criticidade,
     'Status':           p.status,
     'Impacto / Risco':  p.impacto,
@@ -68,7 +68,7 @@ export function gerarExcel(problemas: Problema[], ctx: ExportCtx): void {
     { wch: 22 },  // Custeio
     { wch: 22 },  // Investimento
   ];
-  XLSX.utils.book_append_sheet(wb, wsProblemas, 'Problemas');
+  XLSX.utils.book_append_sheet(wb, wsProblemas, 'Ocorrências');
 
   // ── Aba 3: Resumo por Categoria ─────────────────────────────
   const porCategoria = agruparPor(problemas, 'categoria');
@@ -79,7 +79,7 @@ export function gerarExcel(problemas: Problema[], ctx: ExportCtx): void {
     return {
       'Categoria':          c.nome,
       'Unidade(s)':         unidades,
-      'Total de Problemas': c.total,
+      'Total de Ocorrências': c.total,
       'Participação (%)':   c.percentual,
       'Críticos':           criticos,
     };

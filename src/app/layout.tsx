@@ -6,14 +6,15 @@ import { AuthProvider } from '@/components/AuthProvider';
 import AuthGate from '@/components/AuthGate';
 
 export const metadata: Metadata = {
-  title: 'Painel Executivo de Problemas',
-  description: 'Dashboard executivo estático — análise de problemas por unidade e categoria.',
+  title: 'Painel Executivo de Ocorrências',
+  description: 'Dashboard executivo estático — análise de ocorrências por unidade e categoria.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className="dark" suppressHydrationWarning>
       <head>
+        <link rel="icon" href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/favicon.png`} type="image/png" />
         {/* Anti-flicker: remove dark class if user previously chose light */}
         <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('theme');if(t==='light')document.documentElement.classList.remove('dark')})()` }} />
       </head>

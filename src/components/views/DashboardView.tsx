@@ -50,7 +50,7 @@ export default function DashboardView() {
       <Shell
         crumbs={[{ rotulo: 'Dashboard' }]}
         titulo="Visão Geral Executiva"
-        subtitulo="Panorama consolidado dos problemas mapeados em todas as unidades."
+        subtitulo="Panorama consolidado das ocorrências mapeadas em todas as unidades."
         acao={<ExportButton onClick={() => setExportOpen(true)} />}
       >
         {estados.length > 1 && (
@@ -77,7 +77,7 @@ export default function DashboardView() {
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
           <KPI
-            rotulo="Total de Problemas" valor={visiveis.length}
+            rotulo="Total de Ocorrências" valor={visiveis.length}
             accent="#f59e0b" delay={0}
             onClick={() => setKpiAberto('total')}
           />
@@ -100,7 +100,7 @@ export default function DashboardView() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           <Painel
-            titulo="Problemas por Unidade"
+            titulo="Ocorrências por Unidade"
             className="lg:col-span-3"
             acao={<span className="eyebrow">clique para detalhar</span>}
             delay={120}
@@ -131,7 +131,7 @@ export default function DashboardView() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <Painel
-            titulo="Problemas por Responsável"
+            titulo="Ocorrências por Responsável"
             delay={240}
             acao={<span className="eyebrow">clique para detalhar</span>}
           >
@@ -142,7 +142,7 @@ export default function DashboardView() {
             />
           </Painel>
 
-          <Painel titulo="Problemas por Superintendência" delay={280}>
+          <Painel titulo="Ocorrências por Superintendência" delay={280}>
             <GraficoBarras
               dados={porSuperintendencia}
               cores={corSuper}

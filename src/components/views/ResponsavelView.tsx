@@ -78,7 +78,7 @@ export default function ResponsavelView({ responsavel }: { responsavel: string }
         { rotulo: responsavel },
       ]}
       titulo={responsavel}
-      subtitulo={`Responsável · ${filtrados.length} de ${doResponsavel.length} problema(s) exibido(s)`}
+      subtitulo={`Responsável · ${filtrados.length} de ${doResponsavel.length} ocorrência(s) exibida(s)`}
       acao={<ExportButton onClick={() => setExportOpen(true)} />}
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -109,7 +109,7 @@ export default function ResponsavelView({ responsavel }: { responsavel: string }
       </Painel>
 
       {filtrados.length === 0 ? (
-        <Vazio mensagem="Nenhum problema corresponde aos filtros selecionados." />
+        <Vazio mensagem="Nenhuma ocorrência corresponde aos filtros selecionados." />
       ) : (
         <div className="space-y-2.5 sm:space-y-3">
           {filtrados.map((p, i) => (
@@ -133,7 +133,7 @@ export default function ResponsavelView({ responsavel }: { responsavel: string }
                     </Badge>
                   </div>
                   <p className="mt-2.5 text-sm font-medium leading-snug text-slate-800 dark:text-slate-100 group-hover:text-accent sm:text-[15px]">
-                    {p.problema || 'Problema sem descrição'}
+                    {p.problema || 'Ocorrência sem descrição'}
                   </p>
                   {p.impacto && (
                     <p className="mt-1 line-clamp-2 text-xs text-slate-500 dark:text-slate-400 sm:mt-1.5 sm:text-sm">

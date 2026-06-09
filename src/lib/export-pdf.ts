@@ -117,7 +117,7 @@ function drawHeader(
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(6);
   setTxt(doc, C.blue);
-  doc.text('RELATÓRIO EXECUTIVO  ·  GESTÃO DE PROBLEMAS', ML + 47, 10);
+  doc.text('RELATÓRIO EXECUTIVO  ·  GESTÃO DE OCORRÊNCIAS', ML + 47, 10);
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(6.5);
@@ -428,14 +428,14 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
 
     drawHeader(doc,
       'Visão Geral Executiva',
-      `${porUnidade.length} unidades monitoradas  ·  ${pbs.length} problemas mapeados  ·  ${porCat.length} categorias`,
+      `${porUnidade.length} unidades monitoradas  ·  ${pbs.length} ocorrências mapeadas  ·  ${porCat.length} categorias`,
       logoEsq, logoDir,
     );
 
     let y = Y0;
 
     y = drawKPIs(doc, [
-      { rotulo: 'Total de Problemas',   valor: pbs.length,        cor: C.blue  },
+      { rotulo: 'Total de Ocorrências',  valor: pbs.length,        cor: C.blue  },
       { rotulo: 'Unidades Monitoradas', valor: porUnidade.length, cor: C.sky   },
       { rotulo: 'Criticidade Crítica',  valor: criticos,          cor: C.rose  },
       { rotulo: 'Categorias',           valor: porCat.length,     cor: C.teal  },
@@ -471,20 +471,20 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
 
     drawHeader(doc,
       trunc(unidade, 48),
-      `${pbs.length} problema(s) em ${porCat.length} categoria(s)`,
+      `${pbs.length} ocorrência(s) em ${porCat.length} categoria(s)`,
       logoEsq, logoDir,
     );
 
     let y = Y0;
 
     y = drawKPIs(doc, [
-      { rotulo: 'Total de Problemas', valor: pbs.length,       cor: C.blue   },
+      { rotulo: 'Total de Ocorrências', valor: pbs.length,     cor: C.blue   },
       { rotulo: 'Críticos',           valor: criticos,         cor: C.rose   },
       { rotulo: 'Categorias',         valor: porCat.length,    cor: C.sky    },
     ], y);
 
     y = ensureSpace(doc, y, 18 + Math.min(porCat.length, 10) * 11 + 8);
-    y = sectionTitle(doc, 'Problemas por Categoria', y);
+    y = sectionTitle(doc, 'Ocorrências por Categoria', y);
     y = barChart(doc, porCat, y, PALETA);
     y += 6;
 
@@ -494,8 +494,8 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     y += 6;
 
     y = ensureSpace(doc, y, 20 + Math.min(pbs.length, 25) * 8);
-    y = sectionTitle(doc, 'Lista de Problemas', y);
-    const tHeaders = ['#', 'Problema', 'Criticidade', 'Prazo', 'Status', 'Responsável'];
+    y = sectionTitle(doc, 'Lista de Ocorrências', y);
+    const tHeaders = ['#', 'Ocorrência', 'Criticidade', 'Prazo', 'Status', 'Responsável'];
     const tCols    = [10, 68, 24, 20, 26, 30];
     const tRows    = pbs.slice(0, 30).map(p => [
       p.id, p.problema, p.criticidade, p.prazo, p.status, p.responsavel,
@@ -517,7 +517,7 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
 
     drawHeader(doc,
       trunc(categoria, 44),
-      `${unidade}  ·  ${pbs.length} problema(s) nesta categoria`,
+      `${unidade}  ·  ${pbs.length} ocorrência(s) nesta categoria`,
       logoEsq, logoDir,
     );
 
@@ -540,8 +540,8 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     y += 8;
 
     y = ensureSpace(doc, y, 20 + pbs.length * 8);
-    y = sectionTitle(doc, 'Problemas desta Categoria', y);
-    const tHeaders = ['#', 'Problema', 'Criticidade', 'Prazo', 'Status', 'Responsável'];
+    y = sectionTitle(doc, 'Ocorrências desta Categoria', y);
+    const tHeaders = ['#', 'Ocorrência', 'Criticidade', 'Prazo', 'Status', 'Responsável'];
     const tCols    = [10, 68, 24, 20, 26, 30];
     const tRows    = pbs.map(p => [p.id, p.problema, p.criticidade, p.prazo, p.status, p.responsavel]);
     y = drawTable(doc, tHeaders, tRows, tCols, y);
@@ -563,7 +563,7 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
 
     drawHeader(doc,
       trunc(responsavel, 48),
-      `Responsável  ·  ${pbs.length} problema(s) atribuído(s)  ·  ${porUnid.length} unidade(s)`,
+      `Responsável  ·  ${pbs.length} ocorrência(s) atribuída(s)  ·  ${porUnid.length} unidade(s)`,
       logoEsq, logoDir,
     );
 
@@ -592,8 +592,8 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     y += 8;
 
     y = ensureSpace(doc, y, 20 + Math.min(pbs.length, 30) * 8);
-    y = sectionTitle(doc, 'Lista de Problemas Atribuídos', y);
-    const tHeaders = ['#', 'Problema', 'Unidade', 'Criticidade', 'Status'];
+    y = sectionTitle(doc, 'Lista de Ocorrências Atribuídas', y);
+    const tHeaders = ['#', 'Ocorrência', 'Unidade', 'Criticidade', 'Status'];
     const tCols    = [10, 68, 36, 24, 24];
     const tRows    = pbs.slice(0, 30).map(p => [p.id, p.problema, p.unidade, p.criticidade, p.status]);
     drawTable(doc, tHeaders, tRows, tCols, y);
@@ -608,7 +608,7 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     const p = todos.find(x => x.id === ctx.id);
     if (!p) return;
 
-    const nomeTitulo = p.problema || `Problema #${p.id}`;
+    const nomeTitulo = p.problema || `Ocorrência #${p.id}`;
 
     drawHeader(doc,
       trunc(nomeTitulo, 50),
@@ -656,7 +656,7 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     // diagnóstico
     y = ensureSpace(doc, y, 20 + 35);
     y = sectionTitle(doc, 'Diagnóstico', y);
-    y = drawField(doc, 'Problema Identificado',       p.problema, y, true);
+    y = drawField(doc, 'Ocorrência Identificada',      p.problema, y, true);
     y = ensureSpace(doc, y, 22);
     y = drawField(doc, 'Impacto / Risco Principal',   p.impacto, y);
     y = ensureSpace(doc, y, 22);
@@ -715,7 +715,7 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
       yd += 9;
     });
 
-    applyFooters(doc, `Problema #${p.id}  ·  ${p.unidade}`);
+    applyFooters(doc, `Ocorrência #${p.id}  ·  ${p.unidade}`);
     const nomeArquivo = nomeTitulo.slice(0, 40).replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
     doc.save(`problema-${nomeArquivo}.pdf`);
   }
