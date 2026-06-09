@@ -86,8 +86,24 @@ export default function ProblemaView({ id }: { id: string }) {
             <Campo rotulo="Status"           valor={p.status} />
             <Campo rotulo="Responsável"      valor={p.responsavel} />
             {p.prazo && <Campo rotulo="Prazo" valor={p.prazo} />}
-            {p.custeioEstimado && <Campo rotulo="Custeio Estimado" valor={p.custeioEstimado} />}
-            {p.investimentoEstimado && <Campo rotulo="Investimento Estimado" valor={p.investimentoEstimado} />}
+            {p.custeioEstimado && (
+              <div className="border-b border-slate-100 dark:border-ink-700/50 py-3.5 last:border-0 sm:py-4">
+                <p className="eyebrow">Custeio Estimado</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{p.custeioEstimado}</p>
+                <p className="mt-1 flex items-center gap-1 text-[11px] text-amber-500 dark:text-amber-400">
+                  <span>⚠</span> Em caso de tratativas, solicitar atualização do valor.
+                </p>
+              </div>
+            )}
+            {p.investimentoEstimado && (
+              <div className="border-b border-slate-100 dark:border-ink-700/50 py-3.5 last:border-0 sm:py-4">
+                <p className="eyebrow">Investimento Estimado</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{p.investimentoEstimado}</p>
+                <p className="mt-1 flex items-center gap-1 text-[11px] text-amber-500 dark:text-amber-400">
+                  <span>⚠</span> Em caso de tratativas, solicitar atualização do valor.
+                </p>
+              </div>
+            )}
           </Painel>
         </div>
 
