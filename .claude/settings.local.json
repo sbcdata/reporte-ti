@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npm install *)",
+      "Bash(node -e ' *)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -s http://localhost:3000/_next/static/chunks/app/layout.js)",
+      "Bash(curl -s \"http://localhost:3000/_next/static/chunks/app/page.js\")",
+      "Bash(npm run *)",
+      "Bash(findstr lucide *)",
+      "Bash(Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue)",
+      "Bash(Test-Path *)",
+      "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\rafael.oliveira\\\\Desktop\\\\dashboard-ti\\\\public\\\\.well-known\\\\appspecific\")",
+      "Bash(Out-Null)"
+    ]
+  }
+}
