@@ -2,6 +2,9 @@ import type { Problema, ContagemItem, ExportCtx } from './types';
 import { agruparPor } from './data';
 import { PALETA, corCriticidade } from './ui';
 
+const normStr = (s: string) =>
+  s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
 // ── página A4 ──────────────────────────────────────────────────
 const PW = 210;
 const PH = 297;
@@ -389,15 +392,14 @@ function applyFooters(doc: any, label: string) {
 // ── tabela resumo por unidade (usada no dashboard) ───────────
 function drawResumoUnidades(doc: any, todos: Problema[], y: number): number {
   const porUnidade = agruparPor(todos, 'unidade');
-  const headers = ['Unidade', 'Estado(s)', 'Total', 'Críticos', 'Em Andamento'];
-  const colWidths = [52, 30, 14, 18, 24];
+  const headers = ['Unidade', 'Estado(s)', 'Total', 'Críticos'];
+  const colWidths = [64, 32, 14, 28];
 
   const rows = porUnidade.map(u => {
-    const probs = todos.filter(p => p.unidade === u.nome);
-    const estados     = Array.from(new Set(probs.map(p => p.estado).filter(Boolean))).join('; ') || '—';
-    const criticos    = probs.filter(p => p.criticidade.toLowerCase().includes('critic')).length;
-    const emAndamento = probs.filter(p => p.status.toLowerCase().includes('andamento') || p.status.toLowerCase().includes('progress')).length;
-    return [u.nome, estados, String(u.total), String(criticos), String(emAndamento)];
+    const probs   = todos.filter(p => p.unidade === u.nome);
+    const estados  = Array.from(new Set(probs.map(p => p.estado).filter(Boolean))).join('; ') || '—';
+    const criticos = probs.filter(p => normStr(p.criticidade).includes('critic')).length;
+    return [u.nome, estados, String(u.total), String(criticos)];
   });
 
   return drawTable(doc, headers, rows, colWidths, y);
@@ -424,7 +426,7 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     const porUnidade = agruparPor(pbs, 'unidade');
     const porCat     = agruparPor(pbs, 'categoria');
     const porCrit    = agruparPor(pbs, 'criticidade');
-    const criticos   = pbs.filter(p => p.criticidade.toLowerCase().includes('critic')).length;
+    const criticos   = pbs.filter(p => normStr(p.criticidade).includes('critic')).length;
 
     drawHeader(doc,
       'Visão Geral Executiva',
@@ -558,8 +560,7 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     const porCrit   = agruparPor(pbs, 'criticidade');
     const porUnid   = agruparPor(pbs, 'unidade');
     const porStatus = agruparPor(pbs, 'status');
-    const criticos  = pbs.filter(p => p.criticidade.toLowerCase().includes('critic')).length;
-    const emAndamento = pbs.filter(p => p.status.toLowerCase().includes('andamento') || p.status.toLowerCase().includes('progress')).length;
+    const criticos  = pbs.filter(p => normStr(p.criticidade).includes('critic')).length;
 
     drawHeader(doc,
       trunc(responsavel, 48),
@@ -570,10 +571,9 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     let y = Y0;
 
     y = drawKPIs(doc, [
-      { rotulo: 'Total Atribuídos',    valor: pbs.length,    cor: C.blue  },
-      { rotulo: 'Criticidade Crítica', valor: criticos,      cor: C.rose  },
-      { rotulo: 'Em Andamento',        valor: emAndamento,   cor: C.sky   },
-      { rotulo: 'Unidades',            valor: porUnid.length, cor: C.teal },
+      { rotulo: 'Total Atribuídos',    valor: pbs.length,     cor: C.blue  },
+      { rotulo: 'Criticidade Crítica', valor: criticos,       cor: C.rose  },
+      { rotulo: 'Unidades',            valor: porUnid.length, cor: C.teal  },
     ], y);
 
     y = ensureSpace(doc, y, 18 + porCrit.length * 11 + 8);

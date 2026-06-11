@@ -2,6 +2,9 @@ import * as XLSX from 'xlsx';
 import type { Problema, ExportCtx } from './types';
 import { agruparPor } from './data';
 
+const normStr = (s: string) =>
+  s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
 export function gerarExcel(problemas: Problema[], ctx: ExportCtx): void {
   const wb = XLSX.utils.book_new();
 
@@ -9,26 +12,24 @@ export function gerarExcel(problemas: Problema[], ctx: ExportCtx): void {
   const porUnidade = agruparPor(problemas, 'unidade');
   const resumoUnd  = porUnidade.map(u => {
     const probs = problemas.filter(p => p.unidade === u.nome);
-    const estados     = Array.from(new Set(probs.map(p => p.estado).filter(Boolean))).join('; ') || '—';
-    const criticos    = probs.filter(p => p.criticidade.toLowerCase().includes('critic')).length;
-    const emAndamento = probs.filter(p => p.status.toLowerCase().includes('andamento') || p.status.toLowerCase().includes('progress')).length;
-    const pendentes   = probs.filter(p => p.status.toLowerCase().includes('pend') || p.status.toLowerCase().includes('aberto') || p.status.toLowerCase().includes('aguard')).length;
-    const concluidos  = probs.filter(p => p.status.toLowerCase().includes('conclu') || p.status.toLowerCase().includes('resolv')).length;
+    const estados    = Array.from(new Set(probs.map(p => p.estado).filter(Boolean))).join('; ') || '—';
+    const criticos   = probs.filter(p => normStr(p.criticidade).includes('critic')).length;
+    const pendentes  = probs.filter(p => normStr(p.status).includes('pend') || normStr(p.status).includes('aberto') || normStr(p.status).includes('aguard')).length;
+    const concluidos = probs.filter(p => normStr(p.status).includes('conclu') || normStr(p.status).includes('resolv')).length;
     return {
-      'Unidade':            u.nome,
-      'Estado(s)':          estados,
+      'Unidade':              u.nome,
+      'Estado(s)':            estados,
       'Total de Ocorrências': u.total,
-      'Participação (%)':   u.percentual,
-      'Críticos':           criticos,
-      'Em Andamento':       emAndamento,
-      'Pendentes':          pendentes,
-      'Concluídos':         concluidos,
+      'Participação (%)':     u.percentual,
+      'Críticos':             criticos,
+      'Pendentes':            pendentes,
+      'Concluídos':           concluidos,
     };
   });
   const wsResumo = XLSX.utils.json_to_sheet(resumoUnd);
   wsResumo['!cols'] = [
     { wch: 26 }, { wch: 20 }, { wch: 18 }, { wch: 16 },
-    { wch: 10 }, { wch: 14 }, { wch: 12 }, { wch: 12 },
+    { wch: 10 }, { wch: 12 }, { wch: 12 },
   ];
   XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo por Unidade');
 
@@ -75,7 +76,7 @@ export function gerarExcel(problemas: Problema[], ctx: ExportCtx): void {
   const resumoCat = porCategoria.map(c => {
     const probs   = problemas.filter(p => p.categoria === c.nome);
     const unidades = Array.from(new Set(probs.map(p => p.unidade))).join('; ');
-    const criticos = probs.filter(p => p.criticidade.toLowerCase().includes('critic')).length;
+    const criticos = probs.filter(p => normStr(p.criticidade).includes('critic')).length;
     return {
       'Categoria':          c.nome,
       'Unidade(s)':         unidades,
