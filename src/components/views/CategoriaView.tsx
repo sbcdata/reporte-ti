@@ -33,6 +33,7 @@ export default function CategoriaView({ unidade, categoria }: { unidade: string;
   const [fStatus, setFStatus] = useState('');
   const [fCrit, setFCrit] = useState('');
   const [fResp, setFResp] = useState('');
+  const [fOrdem, setFOrdem] = useState('');
   const [exportOpen, setExportOpen] = useState(false);
 
   const daCategoria = useMemo(
@@ -52,15 +53,22 @@ export default function CategoriaView({ unidade, categoria }: { unidade: string;
     () => Array.from(new Set(daCategoria.map(p => p.responsavel).filter(Boolean))).sort(),
     [daCategoria],
   );
-
-  const filtrados = useMemo(
-    () => daCategoria.filter(p =>
+  const filtrados = useMemo(() => {
+    const base = daCategoria.filter(p =>
       (!fStatus || p.status === fStatus) &&
       (!fCrit   || p.criticidade === fCrit) &&
       (!fResp   || p.responsavel === fResp),
-    ),
-    [daCategoria, fStatus, fCrit, fResp],
-  );
+    );
+    if (!fOrdem) return base;
+    const toISO = (s: string) => s ? s.split('/').reverse().join('-') : '';
+    return [...base].sort((a, b) => {
+      if (fOrdem === 'sol-asc')   return toISO(a.dataSolicitacao).localeCompare(toISO(b.dataSolicitacao));
+      if (fOrdem === 'sol-desc')  return toISO(b.dataSolicitacao).localeCompare(toISO(a.dataSolicitacao));
+      if (fOrdem === 'prazo-asc') return toISO(a.prazo).localeCompare(toISO(b.prazo));
+      if (fOrdem === 'prazo-desc') return toISO(b.prazo).localeCompare(toISO(a.prazo));
+      return 0;
+    });
+  }, [daCategoria, fStatus, fCrit, fResp, fOrdem]);
 
   return (
     <>
@@ -78,9 +86,9 @@ export default function CategoriaView({ unidade, categoria }: { unidade: string;
           titulo="Filtros"
           delay={0}
           acao={
-            (fStatus || fCrit || fResp) && (
+            (fStatus || fCrit || fResp || fOrdem) && (
               <button
-                onClick={() => { setFStatus(''); setFCrit(''); setFResp(''); }}
+                onClick={() => { setFStatus(''); setFCrit(''); setFResp(''); setFOrdem(''); }}
                 className="text-xs text-slate-400 underline-offset-4 hover:text-accent hover:underline"
               >
                 Limpar
@@ -88,10 +96,24 @@ export default function CategoriaView({ unidade, categoria }: { unidade: string;
             )
           }
         >
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:max-w-2xl">
-            <Select label="Status"       valor={fStatus} opcoes={statusOpts} onChange={setFStatus} />
-            <Select label="Criticidade"  valor={fCrit}   opcoes={critOpts}   onChange={setFCrit} />
-            <Select label="Responsável"  valor={fResp}   opcoes={respOpts}   onChange={setFResp} />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Select label="Status"              valor={fStatus} opcoes={statusOpts} onChange={setFStatus} />
+            <Select label="Criticidade"         valor={fCrit}   opcoes={critOpts}   onChange={setFCrit} />
+            <Select label="Responsável"         valor={fResp}   opcoes={respOpts}   onChange={setFResp} />
+            <label className="flex flex-col gap-1.5">
+              <span className="eyebrow">Ordenar por</span>
+              <select
+                value={fOrdem}
+                onChange={e => setFOrdem(e.target.value)}
+                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent/60 dark:border-ink-600 dark:bg-ink-850 dark:text-slate-200"
+              >
+                <option value="">Padrão</option>
+                <option value="sol-asc">Solicitação: mais antiga</option>
+                <option value="sol-desc">Solicitação: mais recente</option>
+                <option value="prazo-asc">Prazo: mais próximo</option>
+                <option value="prazo-desc">Prazo: mais distante</option>
+              </select>
+            </label>
           </div>
         </Painel>
 
@@ -126,8 +148,9 @@ export default function CategoriaView({ unidade, categoria }: { unidade: string;
                       </p>
                     )}
                     <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400 dark:text-slate-500 sm:text-xs">
-                      {p.responsavel && <span>{p.responsavel}</span>}
-                      {p.prazo       && <span>Prazo: {p.prazo}</span>}
+                      {p.responsavel        && <span>{p.responsavel}</span>}
+                      {p.dataSolicitacao    && <span>Solicitado em: {p.dataSolicitacao}</span>}
+                      {p.prazo              && <span>Prazo: {p.prazo}</span>}
                       <span className="ml-auto text-accent opacity-0 transition group-hover:opacity-100">
                         ver →
                       </span>

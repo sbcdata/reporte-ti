@@ -371,6 +371,62 @@ function drawField(doc: any, rotulo: string, valor: string, y: number, destaque 
   return y + 7;
 }
 
+// ── card de problema ─────────────────────────────────────────
+function drawProblemaCard(doc: any, p: Problema, y: number): number {
+  const cor = corCriticidade(p.criticidade);
+  const [r, g, b] = hex2rgb(cor);
+  const cx = ML + 6;
+  const cw = CW - 9;
+
+  // calcula altura dinâmica com base nas linhas da descrição
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  const descLines = doc.splitTextToSize(p.problema || '—', cw).slice(0, 2) as string[];
+  const CARD_H = 11 + descLines.length * 5.5 + 8;
+
+  // fundo
+  setFill(doc, C.slate50);
+  doc.roundedRect(ML, y, CW, CARD_H, 2, 2, 'F');
+  setStroke(doc, C.slate200);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(ML, y, CW, CARD_H, 2, 2, 'D');
+
+  // barra colorida esquerda
+  doc.setFillColor(r, g, b);
+  doc.roundedRect(ML, y, 3, CARD_H, 1, 1, 'F');
+  doc.rect(ML + 1, y, 2, CARD_H, 'F');
+
+  // linha 1: id + criticidade | status
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(r, g, b);
+  doc.text(`#${p.id}  ·  ${p.criticidade || '—'}`, cx, y + 5.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  setTxt(doc, C.slate500);
+  doc.text(p.status || '—', ML + CW - 3, y + 5.5, { align: 'right' });
+
+  // linha 2: descrição
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8.5);
+  setTxt(doc, C.navy);
+  doc.text(descLines, cx, y + 11);
+
+  // linha 3: meta — data solic, prazo, responsável
+  const meta: string[] = [];
+  if (p.dataSolicitacao) meta.push(`Solic: ${p.dataSolicitacao}`);
+  if (p.prazo)           meta.push(`Prazo: ${p.prazo}`);
+  if (p.responsavel)     meta.push(`Resp: ${p.responsavel}`);
+  if (meta.length > 0) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    setTxt(doc, C.slate400);
+    doc.text(meta.join('   ·   '), cx, y + CARD_H - 4);
+  }
+
+  return y + CARD_H + 2.5;
+}
+
 // ── checagem de espaço ───────────────────────────────────────
 function ensureSpace(doc: any, y: number, needed: number): number {
   if (y + needed > PH - 16) {
@@ -469,7 +525,7 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     const porCat    = agruparPor(pbs, 'categoria');
     const porCrit   = agruparPor(pbs, 'criticidade');
     const porStatus = agruparPor(pbs, 'status');
-    const criticos  = pbs.filter(p => p.criticidade.toLowerCase().includes('critic')).length;
+    const criticos  = pbs.filter(p => normStr(p.criticidade).includes('critic')).length;
 
     drawHeader(doc,
       trunc(unidade, 48),
@@ -495,14 +551,12 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     y = barChart(doc, porCrit, y, porCrit.map(c => corCriticidade(c.nome)), 6);
     y += 6;
 
-    y = ensureSpace(doc, y, 20 + Math.min(pbs.length, 25) * 8);
+    y = ensureSpace(doc, y, 40);
     y = sectionTitle(doc, 'Lista de Ocorrências', y);
-    const tHeaders = ['#', 'Ocorrência', 'Criticidade', 'Prazo', 'Status', 'Responsável'];
-    const tCols    = [10, 68, 24, 20, 26, 30];
-    const tRows    = pbs.slice(0, 30).map(p => [
-      p.id, p.problema, p.criticidade, p.prazo, p.status, p.responsavel,
-    ]);
-    y = drawTable(doc, tHeaders, tRows, tCols, y);
+    for (const pb of pbs.slice(0, 40)) {
+      y = ensureSpace(doc, y, 30);
+      y = drawProblemaCard(doc, pb, y);
+    }
 
     applyFooters(doc, `Unidade: ${unidade}`);
     doc.save(`unidade-${unidade.toLowerCase().replace(/\s+/g, '-')}.pdf`);
@@ -515,7 +569,7 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     const pbs       = todos.filter(p => p.unidade === unidade && p.categoria === categoria);
     const porCrit   = agruparPor(pbs, 'criticidade');
     const porStatus = agruparPor(pbs, 'status');
-    const criticos  = pbs.filter(p => p.criticidade.toLowerCase().includes('critic')).length;
+    const criticos  = pbs.filter(p => normStr(p.criticidade).includes('critic')).length;
 
     drawHeader(doc,
       trunc(categoria, 44),
@@ -541,12 +595,12 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     y = barChart(doc, porStatus, y, PALETA, 8);
     y += 8;
 
-    y = ensureSpace(doc, y, 20 + pbs.length * 8);
+    y = ensureSpace(doc, y, 40);
     y = sectionTitle(doc, 'Ocorrências desta Categoria', y);
-    const tHeaders = ['#', 'Ocorrência', 'Criticidade', 'Prazo', 'Status', 'Responsável'];
-    const tCols    = [10, 68, 24, 20, 26, 30];
-    const tRows    = pbs.map(p => [p.id, p.problema, p.criticidade, p.prazo, p.status, p.responsavel]);
-    y = drawTable(doc, tHeaders, tRows, tCols, y);
+    for (const pb of pbs) {
+      y = ensureSpace(doc, y, 30);
+      y = drawProblemaCard(doc, pb, y);
+    }
 
     applyFooters(doc, `${unidade}  ·  ${categoria}`);
     doc.save(`categoria-${categoria.toLowerCase().replace(/\s+/g, '-')}.pdf`);
@@ -591,12 +645,12 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
     y = barChart(doc, porStatus, y, PALETA, 8);
     y += 8;
 
-    y = ensureSpace(doc, y, 20 + Math.min(pbs.length, 30) * 8);
+    y = ensureSpace(doc, y, 40);
     y = sectionTitle(doc, 'Lista de Ocorrências Atribuídas', y);
-    const tHeaders = ['#', 'Ocorrência', 'Unidade', 'Criticidade', 'Status'];
-    const tCols    = [10, 68, 36, 24, 24];
-    const tRows    = pbs.slice(0, 30).map(p => [p.id, p.problema, p.unidade, p.criticidade, p.status]);
-    drawTable(doc, tHeaders, tRows, tCols, y);
+    for (const pb of pbs.slice(0, 40)) {
+      y = ensureSpace(doc, y, 30);
+      y = drawProblemaCard(doc, pb, y);
+    }
 
     applyFooters(doc, `Responsável: ${responsavel}`);
     doc.save(`responsavel-${responsavel.toLowerCase().replace(/[^a-z0-9]/g, '-')}.pdf`);
@@ -669,9 +723,10 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
 
     const HW = (CW - 8) / 2;
     const fichaEsq: [string, string][] = [
-      ['Unidade',   p.unidade],
-      ['Estado',    p.estado],
-      ['Categoria', p.categoria],
+      ['Unidade',              p.unidade],
+      ['Estado',               p.estado],
+      ['Categoria',            p.categoria],
+      ['Data de Solicitação',  p.dataSolicitacao || 'Não informada'],
       ...(p.prazo ? [['Prazo', p.prazo] as [string, string]] : []),
       ...(p.custeioEstimado ? [['Custeio Estimado', p.custeioEstimado] as [string, string]] : []),
       ...(p.investimentoEstimado ? [['Investimento Estimado', p.investimentoEstimado] as [string, string]] : []),
@@ -714,6 +769,26 @@ export async function gerarPDF(ctx: ExportCtx, todos: Problema[]): Promise<void>
       doc.text(trunc(val || '—', 32), ML + HW + 8, yd);
       yd += 9;
     });
+
+    if (p.historicoPrazo.length > 0) {
+      y = Math.max(y, yd) + 4;
+      y = ensureSpace(doc, y, 14 + p.historicoPrazo.length * 9 + (p.prazo ? 9 : 0));
+      y = sectionTitle(doc, 'Histórico de Prazo', y);
+      [...p.historicoPrazo, ...(p.prazo ? [`${p.prazo} (prazo atual)`] : [])].forEach((data, i) => {
+        const isAtual = p.prazo && i === p.historicoPrazo.length;
+        setFill(doc, isAtual ? C.sky : C.slate200);
+        doc.circle(ML + 2, y + 2, 1.5, 'F');
+        doc.setFont('helvetica', isAtual ? 'bold' : 'normal');
+        doc.setFontSize(8.5);
+        setTxt(doc, isAtual ? C.sky : C.slate600);
+        doc.text(data, ML + 7, y + 3.5);
+        if (i < p.historicoPrazo.length - (p.prazo ? 0 : 1)) {
+          setFill(doc, C.slate200);
+          doc.rect(ML + 1.5, y + 4, 0.8, 5, 'F');
+        }
+        y += 9;
+      });
+    }
 
     applyFooters(doc, `Ocorrência #${p.id}  ·  ${p.unidade}`);
     const nomeArquivo = nomeTitulo.slice(0, 40).replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();

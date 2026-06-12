@@ -46,7 +46,9 @@ export function gerarExcel(problemas: Problema[], ctx: ExportCtx): void {
     'Impacto / Risco':  p.impacto,
     'Ação Recomendada': p.acao,
     'Responsável':      p.responsavel,
+    'Data de Solicitação':    p.dataSolicitacao,
     'Prazo':                  p.prazo,
+    'Histórico de Prazo':     p.historicoPrazo.join('; '),
     'Prioridade':             p.prioridade,
     'Custeio Estimado':       p.custeioEstimado,
     'Investimento Estimado':  p.investimentoEstimado,
@@ -64,7 +66,9 @@ export function gerarExcel(problemas: Problema[], ctx: ExportCtx): void {
     { wch: 46 },  // Impacto
     { wch: 46 },  // Ação
     { wch: 24 },  // Responsável
+    { wch: 18 },  // Data de Solicitação
     { wch: 14 },  // Prazo
+    { wch: 30 },  // Histórico de Prazo
     { wch: 12 },  // Prioridade
     { wch: 22 },  // Custeio
     { wch: 22 },  // Investimento

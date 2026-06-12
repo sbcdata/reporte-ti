@@ -14,6 +14,8 @@ export interface Problema {
   custeioEstimado: string;
   investimentoEstimado: string;
   prazo: string;
+  dataSolicitacao: string;
+  historicoPrazo: string[];
 }
 
 export interface ContagemItem {

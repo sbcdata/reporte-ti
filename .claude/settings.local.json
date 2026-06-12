@@ -13,7 +13,8 @@
       "Bash(Test-Path *)",
       "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\rafael.oliveira\\\\Desktop\\\\dashboard-ti\\\\public\\\\.well-known\\\\appspecific\")",
       "Bash(Out-Null)",
-      "PowerShell($senha = \"tisbcd\"; $bytes = [System.Text.Encoding]::UTF8.GetBytes\\($senha\\); $hash = [System.Security.Cryptography.SHA256]::Create\\(\\).ComputeHash\\($bytes\\); \\($hash | ForEach-Object { $_.ToString\\(\"x2\"\\) }\\) -join \"\")"
+      "PowerShell($senha = \"tisbcd\"; $bytes = [System.Text.Encoding]::UTF8.GetBytes\\($senha\\); $hash = [System.Security.Cryptography.SHA256]::Create\\(\\).ComputeHash\\($bytes\\); \\($hash | ForEach-Object { $_.ToString\\(\"x2\"\\) }\\) -join \"\")",
+      "Bash(node *)"
     ]
   }
 }

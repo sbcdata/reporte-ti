@@ -85,6 +85,14 @@ export default function ProblemaView({ id }: { id: string }) {
             {p.prioridade && <Campo rotulo="Prioridade" valor={p.prioridade} />}
             <Campo rotulo="Status"           valor={p.status} />
             <Campo rotulo="Responsável"      valor={p.responsavel} />
+            <div className="border-b border-slate-100 dark:border-ink-700/50 py-3.5 last:border-0 sm:py-4">
+              <p className="eyebrow">Data de Solicitação</p>
+              {p.dataSolicitacao ? (
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{p.dataSolicitacao}</p>
+              ) : (
+                <p className="mt-1.5 text-sm italic text-slate-400 dark:text-slate-500">Não informada</p>
+              )}
+            </div>
             {p.prazo && <Campo rotulo="Prazo" valor={p.prazo} />}
             {p.custeioEstimado && (
               <div className="border-b border-slate-100 dark:border-ink-700/50 py-3.5 last:border-0 sm:py-4">
@@ -106,6 +114,29 @@ export default function ProblemaView({ id }: { id: string }) {
             )}
           </Painel>
         </div>
+
+        {p.historicoPrazo.length > 0 && (
+          <Painel titulo="Histórico de Prazo" delay={220}>
+            <ol className="relative ml-2 border-l border-slate-200 dark:border-ink-700/60">
+              {p.historicoPrazo.map((data, i) => (
+                <li key={i} className="mb-4 ml-5 last:mb-0">
+                  <span className="absolute -left-2 flex h-4 w-4 items-center justify-center rounded-full bg-slate-200 dark:bg-ink-700 ring-4 ring-white dark:ring-ink-900">
+                    <span className="h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
+                  </span>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{data}</p>
+                </li>
+              ))}
+              {p.prazo && (
+                <li className="ml-5">
+                  <span className="absolute -left-2 flex h-4 w-4 items-center justify-center rounded-full bg-sky2/30 ring-4 ring-white dark:ring-ink-900">
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky2" />
+                  </span>
+                  <p className="text-sm font-medium text-sky2">{p.prazo} <span className="ml-1 font-normal text-slate-400 dark:text-slate-500">(prazo atual)</span></p>
+                </li>
+              )}
+            </ol>
+          </Painel>
+        )}
 
         <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-3">
           <button

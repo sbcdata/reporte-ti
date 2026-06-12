@@ -51,6 +51,16 @@ function formatarPrazo(v: unknown): string {
   return String(v).trim();
 }
 
+// Parseia a coluna "Histórico de Prazo": serial único ou string de datas separadas por ";".
+function parsearHistoricoPrazo(v: unknown): string[] {
+  if (v === "" || v === null || v === undefined) return [];
+  if (typeof v === "number") return [formatarPrazo(v)];
+  return String(v)
+    .split(";")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 // Formata valor monetário numérico ou mantém string como está.
 function formatarValor(v: unknown): string {
   if (v === "" || v === null || v === undefined) return "";
@@ -111,6 +121,8 @@ export async function carregarProblemas(): Promise<Problema[]> {
         custeioEstimado: formatarValor(pickRaw(row, ["Custeio estimado", "Custeio"])),
         investimentoEstimado: formatarValor(pickRaw(row, ["Investimento estimado", "Investimento"])),
         prazo: formatarPrazo(pickRaw(row, ["Prazo"])),
+        dataSolicitacao: formatarPrazo(pickRaw(row, ["Data de Solicitação", "Data Solicitação", "Data Solicitacao"])),
+        historicoPrazo: parsearHistoricoPrazo(pickRaw(row, ["Histórico de Prazo", "Historico de Prazo", "Histórico Prazo"])),
       }),
     )
     .filter((p) => p.unidade || p.categoria || p.problema);
