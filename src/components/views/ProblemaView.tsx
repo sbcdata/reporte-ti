@@ -22,6 +22,21 @@ function Campo({ rotulo, valor, destaque = false }: { rotulo: string; valor: str
   );
 }
 
+function CampoFicha({ rotulo, valor, aviso }: { rotulo: string; valor?: string; aviso?: string }) {
+  if (!valor) return null;
+  return (
+    <div className="border-b border-slate-100 dark:border-ink-700/50 py-3 sm:py-3.5">
+      <p className="eyebrow">{rotulo}</p>
+      <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{valor}</p>
+      {aviso && (
+        <p className="mt-1 flex items-center gap-1 text-[11px] text-amber-500 dark:text-amber-400">
+          <span>⚠</span> {aviso}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function ProblemaView({ id }: { id: string }) {
   const { problemas } = useProblemas();
   const { irDashboard, irUnidade, irCategoria } = useNav();
@@ -69,51 +84,36 @@ export default function ProblemaView({ id }: { id: string }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <Painel titulo="Diagnóstico" className="lg:col-span-2" delay={80}>
-            <Campo rotulo="Ocorrência Identificada"         valor={p.problema} destaque />
-            <Campo rotulo="Impacto / Risco Principal"      valor={p.impacto} />
-            <Campo rotulo="Ação Prioritária Recomendada"   valor={p.acao} />
-          </Painel>
+        <Painel titulo="Diagnóstico" delay={80}>
+          <Campo rotulo="Ocorrência Identificada"       valor={p.problema} destaque />
+          <Campo rotulo="Impacto / Risco Principal"     valor={p.impacto} />
+          <Campo rotulo="Ação Prioritária Recomendada"  valor={p.acao} />
+        </Painel>
 
-          <Painel titulo="Ficha Executiva" delay={160}>
-            <Campo rotulo="Unidade"          valor={p.unidade} />
-            <Campo rotulo="Estado"           valor={p.estado} />
-            <Campo rotulo="Superintendência" valor={p.superintendencia} />
-            <Campo rotulo="Categoria"        valor={p.categoria} />
-            <Campo rotulo="Criticidade"      valor={p.criticidade} />
-            {p.prioridade && <Campo rotulo="Prioridade" valor={p.prioridade} />}
-            <Campo rotulo="Status"           valor={p.status} />
-            <Campo rotulo="Responsável"      valor={p.responsavel} />
-            <div className="border-b border-slate-100 dark:border-ink-700/50 py-3.5 last:border-0 sm:py-4">
-              <p className="eyebrow">Data de Solicitação</p>
-              {p.dataSolicitacao ? (
-                <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{p.dataSolicitacao}</p>
-              ) : (
-                <p className="mt-1.5 text-sm italic text-slate-400 dark:text-slate-500">Não informada</p>
-              )}
-            </div>
-            {p.prazo && <Campo rotulo="Prazo" valor={p.prazo} />}
-            {p.custeioEstimado && (
-              <div className="border-b border-slate-100 dark:border-ink-700/50 py-3.5 last:border-0 sm:py-4">
-                <p className="eyebrow">Custeio Estimado</p>
-                <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{p.custeioEstimado}</p>
-                <p className="mt-1 flex items-center gap-1 text-[11px] text-amber-500 dark:text-amber-400">
-                  <span>⚠</span> Em caso de tratativas, solicitar atualização do valor.
-                </p>
-              </div>
-            )}
-            {p.investimentoEstimado && (
-              <div className="border-b border-slate-100 dark:border-ink-700/50 py-3.5 last:border-0 sm:py-4">
-                <p className="eyebrow">Investimento Estimado</p>
-                <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{p.investimentoEstimado}</p>
-                <p className="mt-1 flex items-center gap-1 text-[11px] text-amber-500 dark:text-amber-400">
-                  <span>⚠</span> Em caso de tratativas, solicitar atualização do valor.
-                </p>
-              </div>
-            )}
-          </Painel>
-        </div>
+        <Painel titulo="Ficha Executiva" delay={160}>
+          <div className="grid grid-cols-2 gap-x-8 sm:grid-cols-3 lg:grid-cols-4">
+            <CampoFicha rotulo="Unidade"          valor={p.unidade} />
+            <CampoFicha rotulo="Estado"           valor={p.estado} />
+            <CampoFicha rotulo="Superintendência" valor={p.superintendencia} />
+            <CampoFicha rotulo="Categoria"        valor={p.categoria} />
+            <CampoFicha rotulo="Criticidade"      valor={p.criticidade} />
+            <CampoFicha rotulo="Prioridade"       valor={p.prioridade} />
+            <CampoFicha rotulo="Status"           valor={p.status} />
+            <CampoFicha rotulo="Responsável"      valor={p.responsavel} />
+            <CampoFicha rotulo="Data de Solicitação" valor={p.dataSolicitacao} />
+            <CampoFicha rotulo="Prazo"            valor={p.prazo} />
+            <CampoFicha
+              rotulo="Custeio Estimado"
+              valor={p.custeioEstimado}
+              aviso="Em caso de tratativas, solicitar atualização do valor."
+            />
+            <CampoFicha
+              rotulo="Investimento Estimado"
+              valor={p.investimentoEstimado}
+              aviso="Em caso de tratativas, solicitar atualização do valor."
+            />
+          </div>
+        </Painel>
 
         {p.historicoPrazo.length > 0 && (
           <Painel titulo="Histórico de Prazo" delay={220}>
